@@ -2,7 +2,7 @@
 /* Date : 2021.01.18 (Mon)*/
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <ctype.h>
 
 int strcmp(char* a, char* b);
 
@@ -30,26 +30,43 @@ int main(void)
 int strcmp(char* a, char* b) 
 {
 	int ret = 0;
-	int num = 0;
+	int i = 0;
+	int a_tmp = 0;
+	int b_tmp = 0;
 
-	for (int i = 0; (a[i] != 0) || (b[i] != 0); i++)
+	for (i = 0; (a[i] != '\0') || (b[i] != '\0'); i++)
 	{
-		if (a[i] == b[i])
+		a_tmp = a[i];
+		b_tmp = b[i];
+
+		a_tmp = toupper(a[i]);
+		b_tmp = toupper(b[i]);
+
+
+		if (a_tmp != b_tmp)
 		{
-			ret = 0;
+			if (a_tmp < b_tmp)
+			{
+				ret = -1;
+				break;
+			}
+			else if(a_tmp > b_tmp)
+			{
+				ret = 1;
+				break;
+			}
 		}
-		num = i;
 	}
 
-	if ((a[num] == 0) && (b[num] == 0))
+	if(a[i] == '\0' && b[i] == '\0')
 	{
 		ret = 0;
 	}
-	else if (a[num] == 0)
+	else if (a[i] == '\0')
 	{
 		ret = -1;
 	}
-	else if (b[num] == 0)
+	else if (b[i] == '\0')
 	{
 		ret = 1;
 	}

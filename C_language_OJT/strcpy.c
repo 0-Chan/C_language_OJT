@@ -19,15 +19,9 @@ void strcpy(char* dst, char* src)
 {
 	int strlen = 0;
 
-	for (int i = 0; src[i] != 0; i++)
+	for (int i = 0; src[i] != '\0'; i++)
 	{
 		strlen += 1;
-	}
-
-	*dst = (char *) malloc(sizeof(strlen + 1));
-	if (dst == NULL)
-	{
-		return 1;
 	}
 
 	for (int i = 0; i < strlen + 1; i++)
