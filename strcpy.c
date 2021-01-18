@@ -13,7 +13,6 @@ int main(void)
 	strcpy(buf, src);
 	printf("%s\n", buf);
 
-	return 0;
 }
 
 void strcpy(char* dst, char* src)
@@ -31,7 +30,7 @@ void strcpy(char* dst, char* src)
 		return 1;
 	}
 
-	for (int i = 0, n = strlen; i < n+1; i++)
+	for (int i = 0; i < strlen + 1; i++)
 	{
 		dst[i] = src[i];
 	}
