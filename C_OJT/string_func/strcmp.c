@@ -1,4 +1,4 @@
-/* 목표 : strcpy와 strcmp 함수 만들기 */
+/* 목표 : strcmp 함수 만들기 */
 /* Date : 2021.01.18 (Mon)*/
 
 #include <stdio.h>
@@ -12,22 +12,22 @@ int main(void)
 	char* b = "baseball";
 
 	int ret = strcmp(a, b);
-	
+
 	if (ret < 0)
 	{
-		printf("%s 는 %s 보다 작습니다.\n",a, b);
+		printf("%s 는 %s 보다 작습니다.\n", a, b);
 	}
 	else if (ret > 0)
 	{
-		printf("%s 는 %s 보다 큽니다.\n", a ,b);
+		printf("%s 는 %s 보다 큽니다.\n", a, b);
 	}
 	else
 	{
-		printf("%s 와 %s 는 같은 문자열입니다.\n",a ,b);
+		printf("%s 와 %s 는 같은 문자열입니다.\n", a, b);
 	}
 }
 
-int strcmp(char* a, char* b) 
+int strcmp(char* a, char* b)
 {
 	int ret = 0;
 	int i = 0;
@@ -68,4 +68,4 @@ int strcmp(char* a, char* b)
 	}
 
 	return ret;
-} 
+}

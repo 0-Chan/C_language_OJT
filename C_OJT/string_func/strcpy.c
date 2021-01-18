@@ -1,4 +1,4 @@
-/* 목표 : strcpy와 strcmp 함수 만들기 */
+/* 목표 : strcpy 함수 만들기 */
 /* Date : 2021.01.18 (Mon)*/
 
 #include <stdio.h>
@@ -28,4 +28,4 @@ void strcpy(char* dst, char* src)
 	{
 		dst[i] = src[i];
 	}
-} 
+}
