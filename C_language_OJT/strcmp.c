@@ -36,29 +36,25 @@ int strcmp(char* a, char* b)
 
 	for (i = 0; (a[i] != '\0') || (b[i] != '\0'); i++)
 	{
-		a_tmp = a[i];
-		b_tmp = b[i];
-
 		a_tmp = toupper(a[i]);
 		b_tmp = toupper(b[i]);
-
 
 		if (a_tmp != b_tmp)
 		{
 			if (a_tmp < b_tmp)
 			{
 				ret = -1;
-				break;
+				return ret;
 			}
-			else if(a_tmp > b_tmp)
+			else if (a_tmp > b_tmp)
 			{
 				ret = 1;
-				break;
+				return ret;
 			}
 		}
 	}
 
-	if(a[i] == '\0' && b[i] == '\0')
+	if (a[i] == '\0' && b[i] == '\0')
 	{
 		ret = 0;
 	}
@@ -66,7 +62,7 @@ int strcmp(char* a, char* b)
 	{
 		ret = -1;
 	}
-	else if (b[i] == '\0')
+	else
 	{
 		ret = 1;
 	}
