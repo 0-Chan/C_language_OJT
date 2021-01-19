@@ -13,7 +13,6 @@ int main(void)
 }
 
 
-
 void star(int level)
 {
 	for (int i = 0; i < level; i++)
@@ -34,16 +33,26 @@ void star2(int level)
 		{
 			printf(" ");
 		}
-		for (int k = 0; k < (i*2) +1 ; k++)
+		for (int k = 0; k < (i * 2) + 1; k++)
 		{
 			printf("*");
 		}
-	printf("\n");
+		printf("\n");
 	}
 }
 
-
-void star3(int level) // 역순 피라미드
+void star3(int level)
 {
-
+	for (int i = 0; i < level; i++)
+	{
+		for (int j = level; j < (level + i); j++)
+		{
+			printf(" ");
+		}
+		for (int k = 0; k < (level * 2) - (2 * i + 1); k++)
+		{
+			printf("*");
+		}
+		printf("\n");
+	}
 }
