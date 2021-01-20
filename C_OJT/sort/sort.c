@@ -2,13 +2,15 @@
 /* Date : 2021.01.19 */
 
 #include <stdio.h>
-#include <stdlib.h>
 
-static int ARR_LENGTH = 8;
+#define ARR_LENGTH 8
 
 int* bubbleSort(int *arr);
 int* selectionSort(int *arr);
+
 int* mergeSort(int* arr);
+void split(int* arr, int start, int end);
+void merge(int* arr, int start, int mid, int end);
 
 void printArray(int* arr, int n);
 
@@ -23,8 +25,8 @@ int main(void)
 	int* buf;
 	
 	printf("Before : ");
-	printArray(arr1, ARR_LENGTH);
-	buf = mergeSort(arr1);
+	printArray(arr3, ARR_LENGTH);
+	buf = mergeSort(arr3);
 
 	printf("\nAfter : ");
 	printArray(buf, ARR_LENGTH);
@@ -49,7 +51,7 @@ int* bubbleSort(int* arr)
 				omega = 0;
 			}
 			omega += 1;
-			if (omega == ARR_LENGTH)
+			if(omega == ARR_LENGTH)
 			{
 				return arr;
 			}
@@ -68,7 +70,7 @@ int* selectionSort(int* arr)
 	{
 		for(int j = i; j < ARR_LENGTH - 1; j++)
 		{
-			if (minVal > arr[j+1])
+			if(minVal > arr[j+1])
 			{
 				minVal = arr[j+1];
 				minIndex = j+1;
@@ -91,37 +93,75 @@ int* selectionSort(int* arr)
 
 int* mergeSort(int* arr)
 {
-	// 머지 소트
-	// 1. 모든 원소를 분할한다. (나눌 수 없을 때 까지!)
-	// 2. 인접한 두 원소를 비교해 합친다.
-	// 3. 2개 2개를 비교하여 합친다.
-	// 4. 4개 4개를 비교하여 합친다.
+	split(arr, 0, ARR_LENGTH - 1);
 
-	//--------------------------------------------------
-	
-	// check if arrLength is > 1
-	//{
-	// mid를 기점하여 배열을 할당 해줌
-	// 재귀로 구현
-	//}
-
-	// 포인터 배열 0 과 1을 비교한다
-	// 작은 순으로 배치
-
-	// 2와 3을... 4와 5를... 6과 7을...
-
-	// 01와 23을....  45와 67을...
-
-	// 0123과 4567을..
-
-	// sort 완료 arr 반환
-	
 	return arr;
+}
+
+void split(int* arr, int start, int end)
+{
+	int mid = (start + end) / 2;
+
+	if(mid != start || mid != end)
+	{
+		split(arr, start, mid);
+		split(arr, mid + 1, end);
+		merge(arr, start, mid, end);
+	}
+}
+
+void merge(int* arr, int start, int mid, int end)
+{
+	int sort[ARR_LENGTH] = {0};
+
+//	int iterate = (mid - start) + 2;    // 도는 횟수 x, 횟수를 체크
+
+	int right = mid + 1;
+
+	int a = 0, b = 0;
+
+ 	for(int i = 0; (start + a <= mid) && (right + b <= end); i++)
+	{
+		if(arr[start + a] < arr[right + b])
+		{
+			sort[start + a + b] = arr[start + a];
+			a++;
+		}
+		else
+		{
+			sort[start + a + b] = arr[right + b];
+			b++;
+		}
+	}
+
+	int before = start + a + b;
+
+	if(start + a > mid) // index로 비교
+	{
+		for(int i = before; i <= end; i++)
+		{
+			sort[i] = arr[right + b];	// 왼쪽 오른쪽 다른 것
+			b++;
+		}
+	}
+	else
+	{
+		for (int i = before; i <= end; i++)
+		{
+			sort[i] = arr[start + a];
+			a++;
+		}
+	}
+
+	for(int j = start; j < end + 1; j++)
+	{
+		arr[j] = sort[j];	
+	}
 }
 
 void printArray(int* arr, int n)
 {
-	for (int i = 0; i < n; i++)
+	for(int i = 0; i < n; i++)
 	{
 		printf("%i, ", arr[i]);
 	}
