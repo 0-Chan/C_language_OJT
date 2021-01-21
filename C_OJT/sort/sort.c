@@ -1,5 +1,5 @@
 /* Goal : Bubble sort, selection sort, merge sort function coding. */
-/* Date : 2021.01.19 */
+/* Date : 2021.01.21 */
 
 #include <stdio.h>
 
@@ -25,8 +25,8 @@ int main(void)
 	int* buf;
 	
 	printf("Before : ");
-	printArray(arr3, ARR_LENGTH);
-	buf = mergeSort(arr3);
+	printArray(arr2, ARR_LENGTH);
+	buf = bubbleSort(arr2);
 
 	printf("\nAfter : ");
 	printArray(buf, ARR_LENGTH);
@@ -36,11 +36,12 @@ int main(void)
 int* bubbleSort(int* arr)
 {
 	int tmp = 0;
-	int omega = 0;
+	int changed = 0;
 
 	for(int i = 0; i < ARR_LENGTH - 1; i++)
 	{
-		for(int j = 0; j < ARR_LENGTH - 1; j++)
+		changed = 0;
+		for(int j = 0; j < ARR_LENGTH - 1 - i; j++)
 		{
 			if(arr[j] > arr[j + 1])
 			{
@@ -48,13 +49,12 @@ int* bubbleSort(int* arr)
 				arr[j] = arr[j+1];
 				arr[j+1] = tmp;
 
-				omega = 0;
+				changed = 1;
 			}
-			omega += 1;
-			if(omega == ARR_LENGTH)
-			{
-				return arr;
-			}
+		}
+		if (changed == 0)
+		{
+			return arr;
 		}
 	}
 	return arr;
@@ -62,31 +62,25 @@ int* bubbleSort(int* arr)
 
 int* selectionSort(int* arr)
 {
-	int minVal = arr[0];
 	int minIndex = 0;
 	int tmp = 0;
 
 	for(int i = 0; i < ARR_LENGTH - 1; i++)
 	{
-		for(int j = i; j < ARR_LENGTH - 1; j++)
+		minIndex = i;
+		for(int j = i; j < ARR_LENGTH; j++)
 		{
-			if(minVal > arr[j+1])
+			if(arr[minIndex] > arr[j])
 			{
-				minVal = arr[j+1];
-				minIndex = j+1;
+				minIndex = j;	
 			}
 		}
-		if (minVal == arr[i])
-		{
-			// 유지
-		}
-		else
+		if (minIndex != i)
 		{
 			tmp = arr[i];
-			arr[i] = minVal;
+			arr[i] = arr[minIndex];
 			arr[minIndex] = tmp;
 		}
-		minVal = arr[i+1];
 	}
 	return arr;
 }
@@ -114,10 +108,7 @@ void merge(int* arr, int start, int mid, int end)
 {
 	int sort[ARR_LENGTH] = {0};
 
-//	int iterate = (mid - start) + 2;    // 도는 횟수 x, 횟수를 체크
-
 	int right = mid + 1;
-
 	int a = 0, b = 0;
 
  	for(int i = 0; (start + a <= mid) && (right + b <= end); i++)
@@ -136,11 +127,11 @@ void merge(int* arr, int start, int mid, int end)
 
 	int before = start + a + b;
 
-	if(start + a > mid) // index로 비교
+	if(start + a > mid)
 	{
 		for(int i = before; i <= end; i++)
 		{
-			sort[i] = arr[right + b];	// 왼쪽 오른쪽 다른 것
+			sort[i] = arr[right + b];
 			b++;
 		}
 	}
