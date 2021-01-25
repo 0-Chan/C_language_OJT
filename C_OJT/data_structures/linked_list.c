@@ -20,13 +20,10 @@ typedef struct
 
 void initList(LinkedList *list);
 Node* createNode(int item, Node* next);
-void readList(Node* root, int size);
-void updateNode(LinkedList* list, int size, int data);
-void insertNode(LinkedList* list, int size, int data);
-void deleteNode(LinkedList* list, int size);
-
-int getSize(LinkedList* list);
-void beforeExit(void);
+void readList(LinkedList* list, int index);
+void updateNode(LinkedList* list, int index, int data);
+void insertNode(LinkedList* list, int index, int data);
+void deleteNode(LinkedList* list, int index);
 
 
 int main(void)
@@ -50,7 +47,7 @@ int main(void)
 
 	deleteNode(&list, 2);
 	
-	for(int i = 0, n = getSize(&list); i < n; i++)
+	for(int i = 0, n = list.size; i < n; i++)
 	{
 		readList(&list, i);
 	}
@@ -61,7 +58,6 @@ void initList(LinkedList* list)
 {
 	list->head = NULL;
 	list->size = 0;
-	atexit(beforeExit);
 }
 
 Node* createNode(int item, Node* next)
@@ -69,7 +65,7 @@ Node* createNode(int item, Node* next)
 	Node* n = malloc(sizeof(Node));
 	if(n == NULL)
 	{
-		atexit(beforeExit);
+		exit(1);
 	}
 
 	n->data = item;
@@ -78,17 +74,17 @@ Node* createNode(int item, Node* next)
 	return n;
 }
 
-void readList(LinkedList* list, int size)
+void readList(LinkedList* list, int index)
 {
 	int i = 0;
 	Node* tmp = list->head;
 
 	while(tmp != NULL)
 	{
-		if(i == size)
+		if(i == index)
 		{
 			printf("%i\n", tmp->data);
-			return 0;
+			return;
 		}
 
 		tmp = tmp->next;
@@ -96,12 +92,12 @@ void readList(LinkedList* list, int size)
 	}
 }
 
-void updateNode(LinkedList* list, int size, int data)
+void updateNode(LinkedList* list, int index, int data)
 {
-	if(size < 0 || size > (list->size) + 1)
+	if(index < 0 || index > (list->size) + 1)
 	{
 		printf("Update가 불가능한 위치입니다.");
-		atexit(beforeExit);
+		exit(1);
 	}
 
 	int i = 0;
@@ -109,10 +105,10 @@ void updateNode(LinkedList* list, int size, int data)
 
 	while(tmp != NULL)
 	{
-		if(i == size)
+		if(i == index)
 		{
 			tmp->data = data;
-			return 0;
+			return;
 		}
 
 		tmp = tmp->next;
@@ -120,17 +116,17 @@ void updateNode(LinkedList* list, int size, int data)
 	}
 }
 
-void insertNode(LinkedList* list, int size, int data)
+void insertNode(LinkedList* list, int index, int data)
 {
-	if(size < 0 || size > (list->size) + 1)
+	if(index < 0 || index > (list->size) + 1)
 	{
 		printf("Insert가 불가능한 위치입니다.");
-		atexit(beforeExit);
+		exit(1);
 	}
 
 	Node* n = createNode(data, NULL);
 
-	if(size == 0)
+	if(index == 0)
 	{
 		n->next = list->head;
 		list->head = n;
@@ -138,7 +134,7 @@ void insertNode(LinkedList* list, int size, int data)
 	else
 	{
 		Node* tmp = list->head;
-		for(int i = 0; i < size - 1; i++)
+		for(int i = 0; i < index - 1; i++)
 		{
 			tmp = tmp->next;
 		}
@@ -149,19 +145,19 @@ void insertNode(LinkedList* list, int size, int data)
 	(list->size)++;
 }
 
-void deleteNode(LinkedList* list, int size)
+void deleteNode(LinkedList* list, int index)
 {
-	if(size < 0 || size > (list->size) + 1)
+	if(index < 0 || index > (list->size) + 1)
 	{
 		printf("Delete이 불가능한 위치입니다.");
-		atexit(beforeExit);
+		exit(1);
 	}
 	
 	int i = 0;
 	Node* tmp = list->head;
 	Node* n = NULL;
 
-	if(size == 0)
+	if(index == 0)
 	{
 		list->head = tmp->next;
 
@@ -172,7 +168,7 @@ void deleteNode(LinkedList* list, int size)
 	{
 		while(tmp != NULL)
 		{
-			if(i == size - 1)
+			if(i == index - 1)
 			{
 				n = tmp;
 				tmp = tmp->next;
@@ -181,29 +177,10 @@ void deleteNode(LinkedList* list, int size)
 
 				free(tmp);
 				(list->size)--;
-				return 0;
+				return;
 			}
 			tmp = tmp->next;
 			i++;
 		}
 	}
-}
-
-int getSize(LinkedList* list)
-{
-	Node* tmp = list->head;
-	int size = 0;
-
-	while(tmp != NULL)
-	{
-		tmp = tmp->next;
-		size++;
-	}
-
-	return size;
-}
-
-void beforeExit(void)
-{
-	printf("exit() is called\n");
 }
