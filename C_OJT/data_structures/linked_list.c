@@ -39,7 +39,7 @@ int main(void)
 	insertNode(&list, 2, 3);
 	insertNode(&list, 3, 4);
 
-	for (int i = 0, n = list.size+1; i < n; i++)
+	for (int i = 0, n = list.size; i < n; i++)
 	{
 		data = readList(&list, i);
 		printf("%i\n", data);
@@ -54,7 +54,7 @@ int main(void)
 	errorCode = deleteNode(&list, 2);
 	errorCheck(errorCode);
 	
-	for(int i = 0, n = list.size+1; i < n; i++)
+	for(int i = 0, n = list.size; i < n; i++)
 	{
 		data = readList(&list, i);
 		printf("%i\n", data);
@@ -137,7 +137,7 @@ int insertNode(LinkedList* list, int index, int data)
 	{
 		n->next = list->head;
 		list->head = n;
-
+		(list->size)++;
 		return 0;
 	}
 	else
