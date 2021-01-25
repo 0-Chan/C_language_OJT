@@ -20,7 +20,7 @@ typedef struct
 
 void initList(LinkedList *list);
 Node* createNode(int item, Node* next);
-void readList(LinkedList* list, int index);
+int readList(LinkedList* list, int index);
 void updateNode(LinkedList* list, int index, int data);
 void insertNode(LinkedList* list, int index, int data);
 void deleteNode(LinkedList* list, int index);
@@ -28,6 +28,7 @@ void deleteNode(LinkedList* list, int index);
 
 int main(void)
 {
+	int data = 0;
 	LinkedList list;
 	initList(&list);
 
@@ -36,20 +37,23 @@ int main(void)
 	insertNode(&list, 2, 3);
 	insertNode(&list, 3, 4);
 
-	readList(&list, 0);
-	readList(&list, 1);
-	readList(&list, 2);
-	readList(&list, 3);
+
+	for (int i = 0, n = list.size; i < n; i++)
+	{
+		data = readList(&list, i);
+		printf("%i\n", data);
+	}
 
 	printf("\n");
 
-//	updateNode(&list, 2, 1);
+	updateNode(&list, 2, 1);
 
-	deleteNode(&list, 2);
+//	deleteNode(&list, 2);
 	
 	for(int i = 0, n = list.size; i < n; i++)
 	{
-		readList(&list, i);
+		data = readList(&list, i);
+		printf("%i\n", data);
 	}
 }
 
@@ -74,17 +78,18 @@ Node* createNode(int item, Node* next)
 	return n;
 }
 
-void readList(LinkedList* list, int index)
+int readList(LinkedList* list, int index)
 {
 	int i = 0;
+	int data = 0;
 	Node* tmp = list->head;
 
 	while(tmp != NULL)
 	{
 		if(i == index)
 		{
-			printf("%i\n", tmp->data);
-			return;
+			data = tmp->data;
+			return data;
 		}
 
 		tmp = tmp->next;
