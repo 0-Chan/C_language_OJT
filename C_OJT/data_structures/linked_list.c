@@ -56,7 +56,7 @@ int main(void)
 	errorCode = deleteNode(&list, 2);
 	errorCheck(errorCode);
 	
-	for(int i = 0, n = list.size; i < n; i++)
+	for(int i = 0; i < list.size; i++)
 	{
 		data = readList(&list, i);
 		printf("%i\n", data);
