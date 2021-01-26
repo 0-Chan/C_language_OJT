@@ -1,5 +1,5 @@
 /* Goal : Implementing CRUD using linked list in C
- * date : 2021. 01 . 25 
+ * date : 2021. 01 . 26
  * author : Young Chan Kim (CogaPlex)
  */
 
@@ -21,11 +21,12 @@ typedef struct
 void initList(LinkedList *list);
 Node* createNode(int item, Node* next);
 int readList(LinkedList* list, int index);
-int updateNode(LinkedList* list, int index, int data);
 int insertNode(LinkedList* list, int index, int data);
+int updateNode(LinkedList* list, int index, int data);
 int deleteNode(LinkedList* list, int index);
 
 void errorCheck(int errorCode);
+
 
 int main(void)
 {
@@ -34,22 +35,23 @@ int main(void)
 	LinkedList list;
 	initList(&list);
 
-	insertNode(&list, 0, 1);
-	insertNode(&list, 1, 2);
-	insertNode(&list, 2, 3);
-	insertNode(&list, 3, 4);
+	errorCode = insertNode(&list, 0, 1);
+	errorCheck(errorCode);
+	errorCode = insertNode(&list, 1, 2);
+	errorCheck(errorCode);
+	errorCode = insertNode(&list, 2, 3);
+	errorCheck(errorCode);
+	errorCode = insertNode(&list, 3, 4);
+	errorCheck(errorCode);
 
-	for (int i = 0, n = list.size; i < n; i++)
+	for(int i = 0; i < list.size; i++)
 	{
 		data = readList(&list, i);
 		printf("%i\n", data);
 	}
 
-	printf("\n");
-
-	errorCode = updateNode(&list, 2, 1);
+	errorCode = updateNode(&list, 1, 1);
 	errorCheck(errorCode);
-
 
 	errorCode = deleteNode(&list, 2);
 	errorCheck(errorCode);
@@ -101,9 +103,49 @@ int readList(LinkedList* list, int index)
 	}
 }
 
+int insertNode(LinkedList* list, int index, int data)	// for로 traverse
+{
+	if(index < 0 || index >(list->size))
+	{
+		return 3;
+	}
+	int i = 0;
+	Node* n = createNode(data, NULL);
+	Node* tmp = list->head;
+
+	if(index == 0)
+	{
+		n->next = list->head;
+		list->head = n;
+		(list->size)++;
+		return 0;
+	}
+	else
+	{
+		while((tmp != NULL) || (i == index))
+		{
+			if(tmp->next == NULL)
+			{
+				tmp->next = n;
+				(list->size)++;
+				return 0;
+			}
+			else if(i == index)
+			{
+				n->next = tmp->next;
+				tmp->next = n;
+				(list->size)++;
+				return 0;
+			}
+			tmp = tmp->next;
+			i++;
+		}
+	}
+}
+
 int updateNode(LinkedList* list, int index, int data)
 {
-	if(index < 0 || index > (list->size) + 1)
+	if(index < 0 || index > (list->size))
 	{
 		return 2;
 	}
@@ -124,39 +166,9 @@ int updateNode(LinkedList* list, int index, int data)
 	}
 }
 
-int insertNode(LinkedList* list, int index, int data)
-{
-	if(index < 0 || index > (list->size) + 1)
-	{
-		return 3;
-	}
-
-	Node* n = createNode(data, NULL);
-
-	if(index == 0)
-	{
-		n->next = list->head;
-		list->head = n;
-		(list->size)++;
-		return 0;
-	}
-	else
-	{
-		Node* tmp = list->head;
-		for(int i = 0; i < index - 1; i++)
-		{
-			tmp = tmp->next;
-		}
-
-		n->next = tmp->next;
-		tmp->next = n;
-	}
-	(list->size)++;
-}
-
 int deleteNode(LinkedList* list, int index)
 {
-	if(index < 0 || index > (list->size) + 1)
+	if(index < 0 || index > (list->size))
 	{
 		return 4;
 	}
@@ -199,7 +211,7 @@ void errorCheck(int errorCode)
 	switch(errorCode)
 	{
 		case 0 :
-			return;
+			break;
 		case 1 :
 			printf("createNode 에러 : malloc에 실패하였습니다.");
 			exit(1);
@@ -212,5 +224,8 @@ void errorCheck(int errorCode)
 		case 4 :
 			printf("deleteNode 에러 : 매개변수 index 값을 확인해 주십시오.");
 			exit(1);
+		default :
+			printf("Undefined error code. Please check again.");
+			break;
 	}
 }
