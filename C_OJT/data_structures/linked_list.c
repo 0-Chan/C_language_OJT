@@ -7,6 +7,38 @@
 #include <stdlib.h>
 #include "linkedList.h"
 
+//int main(void)
+//{
+//	int data = 0;
+//	int errorCode = 0;
+//	LinkedList list;
+//	initList(&list);
+//	errorCode = insertNode(&list, 0, 1);
+//	errorCheck(errorCode);
+//	errorCode = insertNode(&list, 1, 2);
+//	errorCheck(errorCode);
+//	errorCode = insertNode(&list, 2, 3);
+//	errorCheck(errorCode);
+//	errorCode = insertNode(&list, 3, 4);
+//	errorCheck(errorCode);
+//	for (int i = 0; i < list.size; i++)
+//	{
+//		data = readList(&list, i);
+//		printf("%i\n", data);
+//	}
+//	errorCode = updateNode(&list, 1, 1);
+//	errorCheck(errorCode);
+//	errorCode = deleteNode(&list, 2);
+//	errorCheck(errorCode);
+//
+//	for (int i = 0, n = list.size; i < n; i++)
+//		for (int i = 0; i < list.size; i++)
+//		{
+//			data = readList(&list, i);
+//			printf("%i\n", data);
+//		}
+//}
+
 void initList(LinkedList* list)
 {
 	list->head = NULL;
@@ -29,7 +61,7 @@ Node* createNode(int item, Node* next)
 
 int readList(LinkedList* list, int index)
 {
-	int i = 1;
+	int i = 0;
 	int data = 0;
 	Node* tmp = list->head;
 
@@ -44,7 +76,7 @@ int readList(LinkedList* list, int index)
 		tmp = tmp->next;
 		i++;
 	}
-	return 1;
+	return;
 }
 
 int insertNode(LinkedList* list, int index, int data)
@@ -55,7 +87,7 @@ int insertNode(LinkedList* list, int index, int data)
 	}
 	int i = 0;
 	Node* n = createNode(data, NULL);
-	Node* tmp = list->head;
+	Node* tmp = list;
 
 	if (index == 0)
 	{
@@ -118,7 +150,7 @@ int deleteNode(LinkedList* list, int index)
 	}
 
 	int i = 0;
-	Node* tmp = list->head;
+	Node* tmp = list;
 	Node* n = NULL;
 
 	if (index == 0)

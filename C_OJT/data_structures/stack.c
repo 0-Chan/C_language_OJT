@@ -8,36 +8,35 @@
 #include "linkedList.h"
 
 int push(LinkedList* stack, int data);
+int pop(LinkedList* stack, int* val);
 int readTop(LinkedList* stack);
-int pop(LinkedList* stack, int* errorCode);
 
 
 int main(void)
 {
-    int element = 0;
+    int val = 0;
     int errorCode = 0;
 
     LinkedList stack;
     initList(&stack);
 
-
-    for (int i = 0; i < 3; i++)
+    for (int i = 7; i < 11; i++)
     {
         errorCode = push(&stack, i);
         errorCheck(errorCode);
 
-        element = readTop(&stack);
-        printf("%d\n", element);
+        val = readTop(&stack);
+        printf("%d\n", val);
     }
 
     printf("\n");
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
-        element = pop(&stack, &errorCode);
+        errorCode = pop(&stack, &val);
         errorCheck(errorCode);
 
-        printf("%d\n", element);
+        printf("%d\n", val);
     }
 }
     
@@ -45,31 +44,36 @@ int main(void)
 int push(LinkedList* stack, int data)
 {
     int errorCode = 0;
-    errorCode = insertNode(stack, stack->size, data);
+    int top = (stack->size);
+
+    errorCode = insertNode(stack, top, data);
    
+    return errorCode;
+}
+
+int pop(LinkedList* stack, int* val)
+{
+    int errorCode = 0;
+    int top = (stack->size);
+
+    if (stack->size == 0)
+    {
+        return 5;
+    }
+    else
+    {
+        *val = readTop(stack);
+        errorCode = deleteNode(stack, top);
+    }
+
     return errorCode;
 }
 
 int readTop(LinkedList* stack)
 {
     int val = 0;
-    val = readList(stack, stack->size);
-    return val;
-}
-
-int pop(LinkedList* stack, int* errorCode)
-{
-    int val = 0;
-
-    if (stack->size == 0 )
-    {
-        *errorCode = 5;
-    }
-    else
-    {
-        val = readTop(stack);
-        *errorCode = deleteNode(stack, stack->size);
-    }
-    
-    return val;
+    int top = (stack->size) - 1;
+    val = readList(stack, top);
+ 
+   return val;
 }
