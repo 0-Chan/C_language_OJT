@@ -20,7 +20,7 @@ int main(void)
     LinkedList stack;
     initList(&stack);
 
-    for (int i = 7; i < 11; i++)
+    for (int i = 0; i < 1; i++)
     {
         errorCode = push(&stack, i);
         errorCheck(errorCode);
@@ -54,7 +54,7 @@ int push(LinkedList* stack, int data)
 int pop(LinkedList* stack, int* val)
 {
     int errorCode = 0;
-    int top = (stack->size);
+    int top = (stack->size) - 1;
 
     if (stack->size == 0)
     {

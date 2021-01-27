@@ -87,7 +87,7 @@ int insertNode(LinkedList* list, int index, int data)
 	}
 	int i = 0;
 	Node* n = createNode(data, NULL);
-	Node* tmp = list;
+	Node* tmp = list->head;
 
 	if (index == 0)
 	{
@@ -150,7 +150,7 @@ int deleteNode(LinkedList* list, int index)
 	}
 
 	int i = 0;
-	Node* tmp = list;
+	Node* tmp = list->head;
 	Node* n = NULL;
 
 	if (index == 0)
@@ -175,7 +175,7 @@ int deleteNode(LinkedList* list, int index)
 				(list->size)--;
 				return 0;
 			}
-			else if (i == index - 1)
+			else if (i == index)
 			{
 				n = tmp;
 
