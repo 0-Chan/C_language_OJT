@@ -29,7 +29,7 @@ Node* createNode(int item, Node* next)
 
 int readList(LinkedList* list, int index)
 {
-	int i = 0;
+	int i = 1;
 	int data = 0;
 	Node* tmp = list->head;
 
@@ -44,11 +44,12 @@ int readList(LinkedList* list, int index)
 		tmp = tmp->next;
 		i++;
 	}
+	return 1;
 }
 
 int insertNode(LinkedList* list, int index, int data)
 {
-	if (index < 0 || index >(list->size))
+	if (index < 0 || index > (list->size))
 	{
 		return 3;
 	}
@@ -88,7 +89,7 @@ int insertNode(LinkedList* list, int index, int data)
 
 int updateNode(LinkedList* list, int index, int data)
 {
-	if (index < 0 || index >(list->size))
+	if (index < 0 || index > (list->size))
 	{
 		return 2;
 	}
@@ -111,7 +112,7 @@ int updateNode(LinkedList* list, int index, int data)
 
 int deleteNode(LinkedList* list, int index)
 {
-	if (index < 0 || index >(list->size))
+	if (index < 0 || index > (list->size))
 	{
 		return 4;
 	}
@@ -132,11 +133,21 @@ int deleteNode(LinkedList* list, int index)
 	{
 		while (tmp != NULL)
 		{
-			if (i == index - 1)
+			if (tmp->next == NULL)
 			{
 				n = tmp;
+
 				tmp = tmp->next;
 
+				free(tmp);
+				(list->size)--;
+				return 0;
+			}
+			else if (i == index - 1)
+			{
+				n = tmp;
+
+				tmp = tmp->next;
 				n->next = tmp->next;
 
 				free(tmp);
@@ -166,6 +177,9 @@ void errorCheck(int errorCode)
 		exit(1);
 	case 4:
 		printf("deleteNode 에러 : 매개변수 index 값을 확인해 주십시오.");
+		exit(1);
+	case 5:
+		printf("Pop 에러 : Stack underflow 발생.");
 		exit(1);
 	default:
 		printf("Undefined error code. Please check again.");
