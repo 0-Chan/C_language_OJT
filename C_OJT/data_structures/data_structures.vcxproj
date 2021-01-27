@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="linked_list.c" />
+    <ClCompile Include="queue.c" />
     <ClCompile Include="stack.c" />
   </ItemGroup>
   <ItemGroup>
