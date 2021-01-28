@@ -213,6 +213,9 @@ void errorCheck(int errorCode)
 	case 5:
 		printf("Pop 에러 : Stack underflow 발생.");
 		exit(1);
+	case 6:
+		printf("deQueue 에러 : Queue underflow 발생.");
+		exit(1);
 	default:
 		printf("Undefined error code. Please check again.");
 		break;

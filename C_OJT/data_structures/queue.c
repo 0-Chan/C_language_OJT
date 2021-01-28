@@ -6,79 +6,71 @@
 #include <stdio.h>
 #include "linkedList.h"
 
-typedef struct
-{
-    Node* front;
-    Node* tail;
-    int size;
-} queue;
+int enQueue(LinkedList* queue, int val);
+int deQueue(LinkedList* queue, int* data);
 
-void initQueue(queue* q);
-
-int enQueue(queue* q, int* val);
-int deQueue(queue* q, int* data);
-
-int peek(queue* q);
-int isEmpty(queue* q);
+int peek(LinkedList* queue);
 
 int main(void)
 {
     int data = 0;
     int errorCode = 0;
+    LinkedList queue;
+    initList(&queue);
 
-    queue q;
-    initQueue(&q);
+    for (int i = 0; i < 5; i++)
+    {
+        errorCode = enQueue(&queue, i);
+        errorCheck(errorCode);
+
+        data = peek(&queue);
+        printf("%d\n", data);
+    }
+  
+    printf("\n");
+
+    for (int i = 0; i < 6; i++)
+    {
+        errorCode = deQueue(&queue, &data);
+        errorCheck(errorCode);
+
+        printf("%d\n", data);
+    }
 }
 
 
-void initQueue(queue* q)
-{
-    q->front = NULL;
-    q->tail = NULL;
-    q->size = 0;
-}
-
-int enQueue(queue* q, int* val)
+int enQueue(LinkedList* queue, int val)
 {
     int errorCode = 0;
-    int tail = (q->size);
+    int tail = (queue->size);
 
-    Node* n = createNode(val, NULL);
-    if (n == 1)
+    errorCode = insertNode(queue, tail, val);  
+  
+    return errorCode;
+}
+
+int deQueue(LinkedList* queue, int* data)
+{
+    int errorCode = 0;
+    int front = 0;
+    if ((queue->size) == 0)
     {
-        errorCode = 1;
+        errorCode = 6;
         return errorCode;
     }
 
-    errorCode = insertNode(list, tail, val);
-    // 인섯트노드 끝 자리에다가
-    // tail 교체
-    return errorCode;
-}
-int deQueue(queue* q, int* data)
-{
-    int errorCode = 0;
-    int front;
+    *data = readList(queue, front);
+    errorCode = deleteNode(queue, front);
 
-    // 비어있는 queue 아닌지?? (isEmpty 활용)
-    // 비어있었다면 return 6 (비어있는 큐)
-
-    // *data = 맨 앞 노드 read 하고
-    // 그 노드 딜리트
-    // front 교체
-    return errorCode;
+    return errorCode;   
 }
 
-int peek(queue* q)
+int peek(LinkedList* queue)  // 완
 {
     int data = 0;
+    Node* tmp = queue->head;
+    
+    data = tmp->data;
 
     return data;
-}
-int isEmpty(queue* q)
-{
-    if ((q->front == NULL) || (q->tail == NULL))
-    {
-        return 1;
-    }
 }
