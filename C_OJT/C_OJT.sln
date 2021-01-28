@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sort", "sort\sort.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "data_structures", "data_structures\data_structures.vcxproj", "{D9B62211-96B0-45B6-ABB4-E1879660B9D2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "matrix", "matrix\matrix.vcxproj", "{CE7DAC0E-CA46-4FD0-A52C-8D6163C7DD31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{D9B62211-96B0-45B6-ABB4-E1879660B9D2}.Release|x64.Build.0 = Release|x64
 		{D9B62211-96B0-45B6-ABB4-E1879660B9D2}.Release|x86.ActiveCfg = Release|Win32
 		{D9B62211-96B0-45B6-ABB4-E1879660B9D2}.Release|x86.Build.0 = Release|Win32
+		{CE7DAC0E-CA46-4FD0-A52C-8D6163C7DD31}.Debug|x64.ActiveCfg = Debug|x64
+		{CE7DAC0E-CA46-4FD0-A52C-8D6163C7DD31}.Debug|x64.Build.0 = Debug|x64
+		{CE7DAC0E-CA46-4FD0-A52C-8D6163C7DD31}.Debug|x86.ActiveCfg = Debug|Win32
+		{CE7DAC0E-CA46-4FD0-A52C-8D6163C7DD31}.Debug|x86.Build.0 = Debug|Win32
+		{CE7DAC0E-CA46-4FD0-A52C-8D6163C7DD31}.Release|x64.ActiveCfg = Release|x64
+		{CE7DAC0E-CA46-4FD0-A52C-8D6163C7DD31}.Release|x64.Build.0 = Release|x64
+		{CE7DAC0E-CA46-4FD0-A52C-8D6163C7DD31}.Release|x86.ActiveCfg = Release|Win32
+		{CE7DAC0E-CA46-4FD0-A52C-8D6163C7DD31}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
