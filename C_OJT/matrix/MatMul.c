@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     {
         for (int j = 0; j < resMat[0].col; j++)
         {
-            for (int k = 0; k < resMat[0].col; k++)
+            for (int k = 0; k < inMat[0].col; k++)
             {
                 resMat[0].elements[i] += inMat[0].elements[k + (inMat[0].col * m)] * inMat[1].elements[k * inMat[1].col + l];
             }
@@ -80,6 +80,7 @@ int main(int argc, char* argv[])
     printf("%d %d %d\n", resMat[0].elements[3], resMat[0].elements[4], resMat[0].elements[5]);
     printf("%d %d %d\n", resMat[0].elements[6], resMat[0].elements[7], resMat[0].elements[8]);
 }
+
 
 int getMat(int argc, char* argv[], Matrix* inMat)
 {
