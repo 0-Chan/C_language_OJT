@@ -60,12 +60,11 @@ int main(int argc, char* argv[])
     
     while (i < n)
     {
-        l = 0;
-        for (int j = 0; j < resMat[0].col; i++, j++, l++)
+        for (int j = 0; j < resMat[0].col; i++, j++)
         {
             for (int k = 0; k < inMat[0].col; k++)
             {
-                resMat[0].elements[i] += inMat[0].elements[k + (inMat[0].col * m)] * inMat[1].elements[(k * inMat[1].col) + l];
+                resMat[0].elements[i] += inMat[0].elements[k + (inMat[0].col * m)] * inMat[1].elements[(k * inMat[1].col) + j];
             }
         }
         m++;
