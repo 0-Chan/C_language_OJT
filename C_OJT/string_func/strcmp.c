@@ -4,14 +4,14 @@
 #include <stdio.h>
 #include <ctype.h>
 
-int strcmp(char* a, char* b);
+int strcmp2(char* a, char* b);
 
 int main(void)
 {
 	char* a = "ascii";
 	char* b = "baseball";
 
-	int ret = strcmp(a, b);
+	int ret = strcmp2(a, b);
 
 	if (ret < 0)
 	{
@@ -27,7 +27,7 @@ int main(void)
 	}
 }
 
-int strcmp(char* a, char* b)
+int strcmp2(char* a, char* b)
 {
 	int ret = 0;
 	int i = 0;
