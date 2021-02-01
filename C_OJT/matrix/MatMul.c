@@ -13,7 +13,7 @@ typedef struct
 {
     int row;
     int col;
-    int elements[100];
+    int *elements;
 } Matrix;
 
 int getMat(int inputCnt, char* txtFiles[], Matrix* inMat);
@@ -34,19 +34,20 @@ int main(int argc, char* argv[])
     int errorCode = 0;
 
     Matrix inMat[MAX_MATRICES] = {0};
-    Matrix resMat[MAX_MATRICES] = {0};
-
+    Matrix resMat = {0};
+    
     errorCode = getMat(inputCnt, txtFiles, inMat);
     checkError(errorCode);
 
-    resMat[0] = inMat[0];
+    resMat = inMat[0];
 
-    for (int i = 0; i < inputCnt - 1; i++)
+    for (int i = 1; i < inputCnt; i++)
     {
-        Matrix a = resMat[i];
-        Matrix b = inMat[i+1];
+        printf("-----%d 번째 연산.-----\n", i);
+        Matrix a = resMat;
+        Matrix b = inMat[i];
 
-        Matrix* ab = &resMat[i+1];
+        Matrix* ab = &resMat;
 
         printMat(a);
         printMat(b);
@@ -54,9 +55,11 @@ int main(int argc, char* argv[])
         errorCode = mulMat(a, b, ab);
         checkError(errorCode);
 
-        printMat(resMat[i + 1]);
-        printf("---------------------\n");
+        printMat(resMat);
+        printf("----------------------\n");
     }
+
+    free(resMat.elements);
 
     return 0;
 }
@@ -77,8 +80,14 @@ int getMat(int inputCnt, char* txtFiles[], Matrix* inMat)
         res = fscanf(file, "%d", &inMat[i].row);
         res = fscanf(file, "%d", &inMat[i].col);
 
+        int eleSize = inMat[i].row * inMat[i].col;
         int j = 0;
-
+        
+        inMat[i].elements = (int*)malloc(eleSize * sizeof(int));
+        if (inMat[i].elements == NULL)
+        {
+            return 3;
+        }
         while (1)
         {
             res = fscanf(file, "%d", &inMat[i].elements[j]);
@@ -97,7 +106,7 @@ int mulMat(Matrix mat1, Matrix mat2, Matrix* resMat)
 {
     if (mat1.col != mat2.row)
     {
-        return 3;
+        return 4;
     }
 
     int aRow = mat1.row;
@@ -111,6 +120,17 @@ int mulMat(Matrix mat1, Matrix mat2, Matrix* resMat)
     resMat->row = abRow;
     resMat->col = abCol;
 
+    resMat->elements = (int*)malloc((abRow * abCol) * sizeof(int));
+    if (resMat->elements == NULL)
+    {
+        return 3;
+    }
+  
+    for (int init = 0; init < (abRow * abCol); init++)
+    {
+        resMat->elements[init] = 0;
+    }
+
     for (int i = 0; i < abRow; i++)
     {
         for (int j = 0; j < abCol; j++)
@@ -122,6 +142,10 @@ int mulMat(Matrix mat1, Matrix mat2, Matrix* resMat)
             }
         }
     }
+
+    free(mat1.elements);
+    free(mat2.elements);
+
     return 0;
 }
 
@@ -156,6 +180,9 @@ void checkError(int errorCode)
         printf("getMat 에러 : File open에 실패했습니다.");
         exit(1);
     case 3:
+        printf("동적할당 에러 : Malloc에 실패했습니다.");
+        exit(1);
+    case 4:
         printf("mulMat 에러 : 입력된 행렬끼리 곱셈 연산이 불가능합니다.");
         exit(1);
     default:
