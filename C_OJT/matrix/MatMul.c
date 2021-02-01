@@ -1,5 +1,5 @@
 /* Goal : Matrix multiplication program in C
- * date : 2021. 01 . 29
+ * date : 2021. 02 . 01
  * author : Young Chan Kim (CogaPlex)
  */
 
@@ -7,6 +7,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct
 {
@@ -15,9 +16,9 @@ typedef struct
     int elements[100];
 } Matrix;
 
-int getMat(int argc, char* argv[], Matrix* inMat);
-int mulMat(Matrix* mat, Matrix* resMat, int matNum[]);
-void printMat(Matrix* mat, int index);
+int getMat(int inputCnt, char* txtFiles[], Matrix* inMat);
+int mulMat(Matrix mat1, Matrix mat2, Matrix* resMat);
+void printMat(Matrix mat);
 void checkError(int errorCode);
 
 
@@ -28,36 +29,58 @@ int main(int argc, char* argv[])
         return 1;
     }
     
+    int inputCnt = argc - 1;
+    char** txtFiles = argv + 1;
     int errorCode = 0;
-    int index = 0;
-    int indexes[3] = {0, 0, 0};
+
     Matrix inMat[MAX_MATRICES];
     Matrix resMat[MAX_MATRICES-1] = {0};
 
-    errorCode = getMat(argc, argv, inMat);
-    checkError(errorCode);
-    
-    printMat(inMat, 0);
-    printMat(inMat, 1);
-
-    indexes[0] = 0;
-    indexes[1] = 1;
-    indexes[2] = 0;
-
-    errorCode = mulMat(inMat, resMat, &indexes);
+    errorCode = getMat(inputCnt, txtFiles, inMat);
     checkError(errorCode);
 
-    printMat(resMat, 0);
+    Matrix a = inMat[0];
+    Matrix b = inMat[1];
+
+    Matrix* ab = &resMat[0];
+
+    printMat(a);
+    printMat(b);
+
+    errorCode = mulMat(a, b, ab);
+    checkError(errorCode);
+  
+    printMat(resMat[0]);
+    printf("---------------------\n");
+
+    for (int i = 0, j = 2; i < inputCnt - 2; i++, j++)
+    {
+        Matrix a = resMat[i];
+        Matrix b = inMat[j];
+
+        Matrix* ab = &resMat[i+1];
+
+        printMat(a);
+        printMat(b);
+
+        errorCode = mulMat(a, b, ab);
+        checkError(errorCode);
+
+        printMat(resMat[i+1]);
+        printf("---------------------\n");
+    }
+
+    return 0;
 }
 
 
-int getMat(int argc, char* argv[], Matrix* inMat)
+int getMat(int inputCnt, char* txtFiles[], Matrix* inMat)
 {
     int res = 0;
 
-    for (int i = 0; i < argc - 1; i++)
+    for (int i = 0; i < inputCnt; i++)
     {
-        FILE* file = fopen(argv[i+1], "r");
+        FILE* file = fopen(txtFiles[i], "r");
         if (file == NULL)
         {
             return 2;
@@ -79,54 +102,56 @@ int getMat(int argc, char* argv[], Matrix* inMat)
         }
         fclose(file);
     }
-
     return 0;
 }
 
-int mulMat(Matrix* mat, Matrix* resMat, int indexes[])
+int mulMat(Matrix mat1, Matrix mat2, Matrix* resMat)
 {
-    int A = indexes[0];
-    int B = indexes[1];
-    int AB = indexes[2];
-
-    if ((mat + A)->col != (mat + B)->row)
+    if (mat1.col != mat2.row)
     {
         return 3;
     }
 
-    (resMat + AB)->row = (mat + A)->row;
-    (resMat + AB)->col = (mat + B)->col;
+    int aRow = mat1.row;
+    int aCol = mat1.col;
+    int bRow = mat2.row;
+    int bCol = mat2.col;
 
-    int n = (resMat + AB)->row * (resMat + AB)->col;
+    int abRow = aRow;
+    int abCol = bCol;
+
+    resMat->row = abRow;
+    resMat->col = abCol;
+
+    int totalCnt = abRow * abCol;
     int i = 0, m = 0;
 
-    while (i < n)
+    for (int m = 0; m < aRow; m++)
     {
-        for (int j = 0; j < (resMat + AB)->col; i++, j++)
+        for (int j = 0; j < abCol; i++, j++)
         {
-            for (int k = 0; k < (mat + A)->col; k++)
+            for (int k = 0; k < aCol; k++)
             {
-                (resMat + AB)->elements[i] += (mat + A)->elements[k + ((mat + A)->col * m)] * (mat + B)->elements[(k * (mat + B)->col) + j];
+                resMat->elements[i] += mat1.elements[k + (aCol * m)] 
+                                      * mat2.elements[(k * bCol) + j];
             }
         }
-        m++;
     }
-
     return 0;
 }
 
-void printMat(Matrix* mat, int index)
+void printMat(Matrix mat)
 {
-    int row = (mat + index)->row;
-    int col = (mat + index)->col;
+    int row = mat.row;
+    int col = mat.col;
 
-    printf("#row %d   #col %d\n", row, col);
+    printf("#row %d  #col %d\n", row, col);
 
     for (int i = 0; i < row; i++)
     {
         for (int j = 0; j < col; j++)
         {
-            printf("%d ", (mat + index)->elements[(col * i) + j]);
+            printf("%d ", mat.elements[(col * i) + j]);
         }    
         printf("\n");
     }
