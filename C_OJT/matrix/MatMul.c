@@ -3,7 +3,6 @@
  * author : Young Chan Kim (CogaPlex)
  */
 
-#define MAX_MATRICES 10
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
@@ -14,7 +13,7 @@ typedef struct
     int row;
     int col;
     int *elements;
-} Matrix;
+} Matrix, *pMatrix;
 
 int getMat(int inputCnt, char* txtFiles[], Matrix* inMat);
 int mulMat(Matrix mat1, Matrix mat2, Matrix* resMat);
@@ -24,7 +23,7 @@ void checkError(int errorCode);
 
 int main(int argc, char* argv[])
 {
-    if (argc == 1 || argc > MAX_MATRICES+1)
+    if (argc == 1)
     {
         return 1;
     }
@@ -33,7 +32,7 @@ int main(int argc, char* argv[])
     char** txtFiles = argv + 1;
     int errorCode = 0;
 
-    Matrix inMat[MAX_MATRICES] = {0};
+    pMatrix inMat = (pMatrix)malloc(sizeof(Matrix) * inputCnt);
     Matrix resMat = {0};
     
     errorCode = getMat(inputCnt, txtFiles, inMat);
@@ -56,11 +55,12 @@ int main(int argc, char* argv[])
         checkError(errorCode);
 
         printMat(resMat);
+
         printf("----------------------\n");
     }
 
     free(resMat.elements);
-
+    free(inMat);
     return 0;
 }
 
@@ -125,16 +125,12 @@ int mulMat(Matrix mat1, Matrix mat2, Matrix* resMat)
     {
         return 3;
     }
-  
-    for (int init = 0; init < (abRow * abCol); init++)
-    {
-        resMat->elements[init] = 0;
-    }
 
     for (int i = 0; i < abRow; i++)
     {
         for (int j = 0; j < abCol; j++)
         {
+            resMat->elements[j + (i * abCol)] = 0;
             for (int k = 0; k < aCol; k++)
             {
                 resMat->elements[j + (i * abCol)] += mat1.elements[k + (aCol * i)] 
@@ -142,9 +138,6 @@ int mulMat(Matrix mat1, Matrix mat2, Matrix* resMat)
             }
         }
     }
-
-    free(mat1.elements);
-    free(mat2.elements);
 
     return 0;
 }
