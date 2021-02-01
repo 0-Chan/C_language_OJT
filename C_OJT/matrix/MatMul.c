@@ -24,7 +24,7 @@ void checkError(int errorCode);
 
 int main(int argc, char* argv[])
 {
-    if (argc == 1 || argc > MAX_MATRICES)
+    if (argc == 1 || argc > MAX_MATRICES+1)
     {
         return 1;
     }
@@ -33,30 +33,18 @@ int main(int argc, char* argv[])
     char** txtFiles = argv + 1;
     int errorCode = 0;
 
-    Matrix inMat[MAX_MATRICES];
-    Matrix resMat[MAX_MATRICES-1] = {0};
+    Matrix inMat[MAX_MATRICES] = {0};
+    Matrix resMat[MAX_MATRICES] = {0};
 
     errorCode = getMat(inputCnt, txtFiles, inMat);
     checkError(errorCode);
 
-    Matrix a = inMat[0];
-    Matrix b = inMat[1];
+    resMat[0] = inMat[0];
 
-    Matrix* ab = &resMat[0];
-
-    printMat(a);
-    printMat(b);
-
-    errorCode = mulMat(a, b, ab);
-    checkError(errorCode);
-  
-    printMat(resMat[0]);
-    printf("---------------------\n");
-
-    for (int i = 0, j = 2; i < inputCnt - 2; i++, j++)
+    for (int i = 0; i < inputCnt - 1; i++)
     {
         Matrix a = resMat[i];
-        Matrix b = inMat[j];
+        Matrix b = inMat[i+1];
 
         Matrix* ab = &resMat[i+1];
 
@@ -66,7 +54,7 @@ int main(int argc, char* argv[])
         errorCode = mulMat(a, b, ab);
         checkError(errorCode);
 
-        printMat(resMat[i+1]);
+        printMat(resMat[i + 1]);
         printf("---------------------\n");
     }
 
@@ -123,17 +111,14 @@ int mulMat(Matrix mat1, Matrix mat2, Matrix* resMat)
     resMat->row = abRow;
     resMat->col = abCol;
 
-    int totalCnt = abRow * abCol;
-    int i = 0, m = 0;
-
-    for (int m = 0; m < aRow; m++)
+    for (int i = 0; i < abRow; i++)
     {
-        for (int j = 0; j < abCol; i++, j++)
+        for (int j = 0; j < abCol; j++)
         {
             for (int k = 0; k < aCol; k++)
             {
-                resMat->elements[i] += mat1.elements[k + (aCol * m)] 
-                                      * mat2.elements[(k * bCol) + j];
+                resMat->elements[j + (i * abCol)] += mat1.elements[k + (aCol * i)] 
+                                                    * mat2.elements[(k * bCol) + j];
             }
         }
     }
