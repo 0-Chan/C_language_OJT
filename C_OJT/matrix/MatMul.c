@@ -33,6 +33,10 @@ int main(int argc, char* argv[])
     int errorCode = 0;
 
     pMatrix inMat = (pMatrix)malloc(sizeof(Matrix) * inputCnt);
+    if (inMat == NULL)
+    {
+        return 1;
+    }
     Matrix resMat = {0};
     
     errorCode = getMat(inputCnt, txtFiles, inMat);
@@ -59,6 +63,11 @@ int main(int argc, char* argv[])
         printf("----------------------\n");
     }
 
+    for (int i = 0; i < inputCnt; i++)
+    {
+        free(inMat[i].elements);
+        inMat[i].elements = NULL;
+    }
     free(resMat.elements);
     free(inMat);
     return 0;
@@ -88,6 +97,7 @@ int getMat(int inputCnt, char* txtFiles[], Matrix* inMat)
         {
             return 3;
         }
+
         while (1)
         {
             res = fscanf(file, "%d", &inMat[i].elements[j]);
@@ -126,14 +136,17 @@ int mulMat(Matrix mat1, Matrix mat2, Matrix* resMat)
         return 3;
     }
 
+    int haha = sizeof(resMat->elements);
+
     for (int i = 0; i < abRow; i++)
     {
         for (int j = 0; j < abCol; j++)
         {
-            resMat->elements[j + (i * abCol)] = 0;
+            *(resMat->elements + j + (i * abCol)) = 0;
+
             for (int k = 0; k < aCol; k++)
             {
-                resMat->elements[j + (i * abCol)] += mat1.elements[k + (aCol * i)] 
+                *(resMat->elements + j + (i * abCol)) += mat1.elements[k + (aCol * i)] 
                                                     * mat2.elements[(k * bCol) + j];
             }
         }
