@@ -19,13 +19,12 @@ typedef struct
 
 typedef struct
 {
-    double x;
-    double y;
+    int width;
+    int height;
 } Length;
 
-Length getRectLength(int rows, int cols, double radian);
-Coords moveToCenter(Coords input, int rows, int cols, Length rect);
-Coords rotationMatrix(Coords input, double radian, Coords base);
+Length getRectLength(Mat img, double radian);
+Coords rotationMatrix(Coords input, double radian, Coords center);
 
 int main(int argc, char* argv[])
 {
@@ -40,30 +39,35 @@ int main(int argc, char* argv[])
     double val = atof(degree);
     double radian = (PI / 180) * val;
 
+    cout << "rad :" << radian << endl;
+
     Length rotLength;
-    Coords inputXY, base, resXY;
+    Coords inputXY, center, rotCenter, resXY;
 
     Mat img = imread(imgName, IMREAD_GRAYSCALE);
-    int rows = img.rows - 1;
-    int cols = img.cols - 1;
 
-    rotLength = getRectLength(rows, cols, radian);
-    Mat rotImg = Mat::zeros(rotLength.x + 1, rotLength.y + 1, img.type());
+    rotLength = getRectLength(img, radian);
+    Mat rotImg = Mat::zeros(rotLength.width, rotLength.height, img.type());
 
-    base.x = rotLength.x / 2;
-    base.y = rotLength.y / 2;
+    center.x = (img.rows - 1) / 2;
+    center.y = (img.cols - 1) / 2;
 
-    for (int i = 0; i < rows; i++)
+    rotCenter.x = (rotLength.width - 1) / 2;
+    rotCenter.y = (rotLength.height - 1) / 2;
+
+    for (int i = 0; i < img.rows; i++)
     {
-        for (int j = 0; j < cols; j++)
+        for (int j = 0; j < img.cols; j++)
         {
             inputXY.x = j;
             inputXY.y = i;
 
-            resXY = moveToCenter(inputXY, rows, cols, rotLength);
-            resXY = rotationMatrix(resXY, radian, base);
+            resXY = rotationMatrix(inputXY, radian, rotCenter);
 
-            rotImg.at<uchar>((int)resXY.y, (int)resXY.x) = img.at<uchar>(i, j);
+            if (!(resXY.x < 0 || resXY.y < 0 || resXY.x > rotLength.width - 1 || resXY.y > rotLength.height - 1))
+            {
+                rotImg.at<uchar>((int)resXY.y, (int)resXY.x) = img.at<uchar>(i, j);
+            }
         }
     }
 
@@ -75,25 +79,25 @@ int main(int argc, char* argv[])
 }
 
 
-Length getRectLength(int rows, int cols, double radian)
+Length getRectLength(Mat img, double radian)
 {
-    Coords a, b, c, d, base = { 0 };
+    Coords a, b, c, d, center = { 0 };
     Coords max, min;
     Length rotLength;
 
     a.x = 0;
     a.y = 0;
     b.x = 0;
-    b.y = rows;
-    c.x = cols;
+    b.y = img.rows - 1;
+    c.x = img.cols - 1;
     c.y = 0;
-    d.x = cols;
-    d.y = rows;
+    d.x = img.cols - 1;
+    d.y = img.rows - 1;
 
-    a = rotationMatrix(a, radian, base);
-    b = rotationMatrix(b, radian, base);
-    c = rotationMatrix(c, radian, base);
-    d = rotationMatrix(d, radian, base);
+    a = rotationMatrix(a, radian, center);
+    b = rotationMatrix(b, radian, center);
+    c = rotationMatrix(c, radian, center);
+    d = rotationMatrix(d, radian, center);
 
     max.x = std::max({ a.x, b.x, c.x, d.x });
     min.x = std::min({ a.x, b.x, c.x, d.x });
@@ -101,34 +105,18 @@ Length getRectLength(int rows, int cols, double radian)
     max.y = std::max({ a.y, b.y, c.y, d.y });
     min.y = std::min({ a.y, b.y, c.y, d.y });
 
-    rotLength.x = max.x - min.x;
-    rotLength.y = max.y - min.y;
+    rotLength.width = (max.x - min.x) + 1;
+    rotLength.height = (max.y - min.y) + 1;
 
     return rotLength;
 }
 
-Coords moveToCenter(Coords input, int rows, int cols, Length rect)
+Coords rotationMatrix(Coords input, double radian, Coords center)
 {
-    Coords res = { 0 };
-    Coords movePoint = { 0 };
+    Coords res = {0};
 
-    movePoint.x = (rect.x - cols) / 2;
-    movePoint.y = (rect.y - rows) / 2;
-
-    res.x = input.x + movePoint.x;
-    res.y = input.y + movePoint.y;
-
-    return res;
-}
-
-Coords rotationMatrix(Coords input, double radian, Coords base)
-{
-    Coords res;
-    res.x = 0;
-    res.y = 0;
-
-    res.x = cos(radian) * (input.x - base.x) - sin(radian) * (input.y - base.y) + base.x;
-    res.y = sin(radian) * (input.x - base.x) + cos(radian) * (input.y - base.y) + base.y;
+    res.x = cos(radian) * (input.x - center.x) + sin(radian) * (input.y - center.y) + center.x;
+    res.y = -sin(radian) * (input.x - center.x) + cos(radian) * (input.y - center.y) + center.y;
 
     return res;
 }
