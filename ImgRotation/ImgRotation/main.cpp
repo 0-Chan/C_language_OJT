@@ -24,7 +24,7 @@ typedef struct
 } Length;
 
 Length getRectLength(Mat img, double radian);
-Coords rotationMatrix(Coords input, double radian, Coords center);
+Coords rotationMatrix(Coords input, double radian, Coords center, Coords rotCenter);
 
 int main(int argc, char* argv[])
 {
@@ -39,21 +39,19 @@ int main(int argc, char* argv[])
     double val = atof(degree);
     double radian = (PI / 180) * val;
 
-    cout << "rad :" << radian << endl;
-
     Length rotLength;
     Coords inputXY, center, rotCenter, resXY;
 
     Mat img = imread(imgName, IMREAD_GRAYSCALE);
 
     rotLength = getRectLength(img, radian);
-    Mat rotImg = Mat::zeros(rotLength.width, rotLength.height, img.type());
+    Mat rotImg = Mat::zeros(rotLength.height, rotLength.width, img.type());
 
-    center.x = (img.rows - 1) / 2;
-    center.y = (img.cols - 1) / 2;
+    center.x = img.cols / 2;
+    center.y = img.rows / 2;
 
-    rotCenter.x = (rotLength.width - 1) / 2;
-    rotCenter.y = (rotLength.height - 1) / 2;
+    rotCenter.x = rotLength.width / 2;
+    rotCenter.y = rotLength.height / 2;
 
     for (int i = 0; i < img.rows; i++)
     {
@@ -62,15 +60,15 @@ int main(int argc, char* argv[])
             inputXY.x = j;
             inputXY.y = i;
 
-            resXY = rotationMatrix(inputXY, radian, rotCenter);
+            resXY = rotationMatrix(inputXY, radian, center, rotCenter);
 
-            if (!(resXY.x < 0 || resXY.y < 0 || resXY.x > rotLength.width - 1 || resXY.y > rotLength.height - 1))
+            if (!(resXY.x < 0 || resXY.y < 0 || resXY.x >= rotImg.cols || resXY.y >= rotImg.rows))
             {
                 rotImg.at<uchar>((int)resXY.y, (int)resXY.x) = img.at<uchar>(i, j);
             }
         }
     }
-
+    
     imshow("original", img);
     imshow("result", rotImg);
     waitKey(0);
@@ -81,23 +79,23 @@ int main(int argc, char* argv[])
 
 Length getRectLength(Mat img, double radian)
 {
-    Coords a, b, c, d, center = { 0 };
+    Coords a, b, c, d, zero = { 0 };
     Coords max, min;
     Length rotLength;
 
     a.x = 0;
     a.y = 0;
     b.x = 0;
-    b.y = img.rows - 1;
-    c.x = img.cols - 1;
+    b.y = img.rows;
+    c.x = img.cols;
     c.y = 0;
-    d.x = img.cols - 1;
-    d.y = img.rows - 1;
+    d.x = img.cols;
+    d.y = img.rows;
 
-    a = rotationMatrix(a, radian, center);
-    b = rotationMatrix(b, radian, center);
-    c = rotationMatrix(c, radian, center);
-    d = rotationMatrix(d, radian, center);
+    a = rotationMatrix(a, radian, zero, zero);
+    b = rotationMatrix(b, radian, zero, zero);
+    c = rotationMatrix(c, radian, zero, zero);
+    d = rotationMatrix(d, radian, zero, zero);
 
     max.x = std::max({ a.x, b.x, c.x, d.x });
     min.x = std::min({ a.x, b.x, c.x, d.x });
@@ -105,18 +103,18 @@ Length getRectLength(Mat img, double radian)
     max.y = std::max({ a.y, b.y, c.y, d.y });
     min.y = std::min({ a.y, b.y, c.y, d.y });
 
-    rotLength.width = (max.x - min.x) + 1;
-    rotLength.height = (max.y - min.y) + 1;
+    rotLength.width = max.x - min.x;
+    rotLength.height = max.y - min.y;
 
     return rotLength;
 }
 
-Coords rotationMatrix(Coords input, double radian, Coords center)
+Coords rotationMatrix(Coords input, double radian, Coords center, Coords rotCenter)
 {
-    Coords res = {0};
+    Coords res = { 0 };
 
-    res.x = cos(radian) * (input.x - center.x) + sin(radian) * (input.y - center.y) + center.x;
-    res.y = -sin(radian) * (input.x - center.x) + cos(radian) * (input.y - center.y) + center.y;
+    res.x = cos(radian) * (input.x - center.x) + sin(radian) * (input.y - center.y) + rotCenter.x;
+    res.y = -sin(radian) * (input.x - center.x) + cos(radian) * (input.y - center.y) + rotCenter.y;
 
     return res;
 }
