@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <cmath>
 
-#define PI 3.14159265
+#define PI 3.14159265358
 
 using namespace cv;
 using namespace std;
@@ -25,6 +25,9 @@ typedef struct
 
 Length getRectLength(Mat img, double radian);
 Coords rotationMatrix(Coords input, double radian, Coords center, Coords rotCenter);
+Mat forwardMapping(Mat img, double radian);
+Coords backwardRotationMatrix(Coords input, double radian, Coords rotCenter);
+Mat backwardMapping(Mat img, double radian);
 
 int main(int argc, char* argv[])
 {
@@ -37,40 +40,16 @@ int main(int argc, char* argv[])
     char* imgName = argv[1];
     char* degree = argv[2];
     double val = atof(degree);
-    double radian = (PI / 180) * val;
-
-    Length rotLength;
-    Coords inputXY, center, rotCenter, resXY;
+    double radian = (PI / 180.0) * val;
 
     Mat img = imread(imgName, IMREAD_GRAYSCALE);
+    Mat res;    
 
-    rotLength = getRectLength(img, radian);
-    Mat rotImg = Mat::zeros(rotLength.height, rotLength.width, img.type());
+//  res = forwardMapping(img, radian);
+    res = backwardMapping(img, radian);
 
-    center.x = img.cols / 2;
-    center.y = img.rows / 2;
-
-    rotCenter.x = rotLength.width / 2;
-    rotCenter.y = rotLength.height / 2;
-
-    for (int i = 0; i < img.rows; i++)
-    {
-        for (int j = 0; j < img.cols; j++)
-        {
-            inputXY.x = j;
-            inputXY.y = i;
-
-            resXY = rotationMatrix(inputXY, radian, center, rotCenter);
-
-            if (!(resXY.x < 0 || resXY.y < 0 || resXY.x >= rotImg.cols || resXY.y >= rotImg.rows))
-            {
-                rotImg.at<uchar>((int)resXY.y, (int)resXY.x) = img.at<uchar>(i, j);
-            }
-        }
-    }
-    
     imshow("original", img);
-    imshow("result", rotImg);
+    imshow("result", res);
     waitKey(0);
 
     return 0;
@@ -117,4 +96,86 @@ Coords rotationMatrix(Coords input, double radian, Coords center, Coords rotCent
     res.y = -sin(radian) * (input.x - center.x) + cos(radian) * (input.y - center.y) + rotCenter.y;
 
     return res;
+}
+
+Mat forwardMapping(Mat img, double radian)
+{
+    Coords input, res, center, rotCenter;
+    Length rotLength;
+
+    rotLength = getRectLength(img, radian);
+    Mat rotImg = Mat::zeros(rotLength.height, rotLength.width, img.type());
+
+    center.x = img.cols / 2;
+    center.y = img.rows / 2;
+    rotCenter.x = rotLength.width / 2;
+    rotCenter.y = rotLength.height / 2;
+
+    for (int i = 0; i < img.rows; i++)
+    {
+        for (int j = 0; j < img.cols; j++)
+        {
+            input.x = j;
+            input.y = i;
+
+            res = rotationMatrix(input, radian, center, rotCenter);
+
+            if (!(res.x < 0 || res.y < 0 || res.x >= rotImg.cols || res.y >= rotImg.rows))
+            {
+                rotImg.at<uchar>((int)res.y, (int)res.x) = img.at<uchar>(i, j);
+            }
+        }
+    }
+    return rotImg;
+}
+
+Coords backwardRotationMatrix(Coords input, double radian, Coords rotCenter)
+{
+    Coords res = { 0 };
+
+    res.x = cos(radian) * (input.x - rotCenter.x) - sin(radian) * (input.y - rotCenter.y) + rotCenter.x;
+    res.y = sin(radian) * (input.x - rotCenter.x) + cos(radian) * (input.y - rotCenter.y) + rotCenter.y;
+
+    return res;
+}
+
+Mat backwardMapping(Mat img, double radian)
+{
+    Coords input, res, center, rotCenter;
+    Length rotLength;
+
+    rotLength = getRectLength(img, radian);
+    Mat rotImg = Mat::zeros(rotLength.height, rotLength.width, img.type());
+    Mat tmp = Mat::zeros(rotLength.height, rotLength.width, img.type());
+
+    center.x = img.cols / 2;
+    center.y = img.rows / 2;
+
+    rotCenter.x = rotLength.width / 2;
+    rotCenter.y = rotLength.height / 2;
+
+    for (int y = 0; y < img.rows; y++)
+    {
+        for (int x = 0; x < img.cols; x++)
+        {
+            tmp.at<uchar>(y + rotCenter.y - center.y, x + rotCenter.x - center.x) = img.at<uchar>(y, x);
+        }
+    }
+
+    for (int i = 0; i < rotImg.rows; i++)
+    {
+        for (int j = 0; j < rotImg.cols; j++)
+        {
+            input.x = j;
+            input.y = i;
+
+            res = backwardRotationMatrix(input, radian, rotCenter);
+
+            if (!(res.x < 0 || res.y < 0 || res.x >= rotImg.cols || res.y >= rotImg.rows))
+            {
+                rotImg.at<uchar>(i, j) = tmp.at<uchar>((int)res.y, (int)res.x);
+            }
+        }
+    }
+    return rotImg;
 }
