@@ -26,7 +26,7 @@ typedef struct
 Length getRectLength(Mat img, double radian);
 Coords rotationMatrix(Coords input, double radian, Coords center, Coords rotCenter);
 Mat forwardMapping(Mat img, double radian);
-Coords backwardRotationMatrix(Coords input, double radian, Coords rotCenter);
+Coords backwardRotationMatrix(Coords input, double radian, Coords Center, Coords rotCenter);
 Mat backwardMapping(Mat img, double radian);
 
 int main(int argc, char* argv[])
@@ -65,11 +65,11 @@ Length getRectLength(Mat img, double radian)
     a.x = 0;
     a.y = 0;
     b.x = 0;
-    b.y = img.rows;
-    c.x = img.cols;
+    b.y = img.rows - 1;
+    c.x = img.cols - 1;
     c.y = 0;
-    d.x = img.cols;
-    d.y = img.rows;
+    d.x = img.cols - 1;
+    d.y = img.rows - 1;
 
     a = rotationMatrix(a, radian, zero, zero);
     b = rotationMatrix(b, radian, zero, zero);
@@ -82,8 +82,8 @@ Length getRectLength(Mat img, double radian)
     max.y = std::max({ a.y, b.y, c.y, d.y });
     min.y = std::min({ a.y, b.y, c.y, d.y });
 
-    rotLength.width = max.x - min.x;
-    rotLength.height = max.y - min.y;
+    rotLength.width = (max.x - min.x) + 1;
+    rotLength.height = (max.y - min.y) + 1;
 
     return rotLength;
 }
@@ -129,12 +129,12 @@ Mat forwardMapping(Mat img, double radian)
     return rotImg;
 }
 
-Coords backwardRotationMatrix(Coords input, double radian, Coords rotCenter)
+Coords backwardRotationMatrix(Coords input, double radian, Coords Center, Coords rotCenter)
 {
     Coords res = { 0 };
 
-    res.x = cos(radian) * (input.x - rotCenter.x) - sin(radian) * (input.y - rotCenter.y) + rotCenter.x;
-    res.y = sin(radian) * (input.x - rotCenter.x) + cos(radian) * (input.y - rotCenter.y) + rotCenter.y;
+    res.x = cos(radian) * (input.x - rotCenter.x) - sin(radian) * (input.y - rotCenter.y) + Center.x;
+    res.y = sin(radian) * (input.x - rotCenter.x) + cos(radian) * (input.y - rotCenter.y) + Center.y;
 
     return res;
 }
@@ -146,21 +146,12 @@ Mat backwardMapping(Mat img, double radian)
 
     rotLength = getRectLength(img, radian);
     Mat rotImg = Mat::zeros(rotLength.height, rotLength.width, img.type());
-    Mat tmp = Mat::zeros(rotLength.height, rotLength.width, img.type());
 
     center.x = img.cols / 2;
     center.y = img.rows / 2;
 
     rotCenter.x = rotLength.width / 2;
     rotCenter.y = rotLength.height / 2;
-
-    for (int y = 0; y < img.rows; y++)
-    {
-        for (int x = 0; x < img.cols; x++)
-        {
-            tmp.at<uchar>(y + rotCenter.y - center.y, x + rotCenter.x - center.x) = img.at<uchar>(y, x);
-        }
-    }
 
     for (int i = 0; i < rotImg.rows; i++)
     {
@@ -169,11 +160,11 @@ Mat backwardMapping(Mat img, double radian)
             input.x = j;
             input.y = i;
 
-            res = backwardRotationMatrix(input, radian, rotCenter);
+            res = backwardRotationMatrix(input, radian, center, rotCenter);
 
-            if (!(res.x < 0 || res.y < 0 || res.x >= rotImg.cols || res.y >= rotImg.rows))
+            if (!(res.x < 0 || res.y < 0 || res.x >= img.cols || res.y >= img.rows))
             {
-                rotImg.at<uchar>(i, j) = tmp.at<uchar>((int)res.y, (int)res.x);
+                rotImg.at<uchar>(i, j) = img.at<uchar>((int)res.y, (int)res.x);
             }
         }
     }
