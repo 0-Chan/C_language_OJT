@@ -6,8 +6,6 @@
 #include <algorithm>
 #include <cmath>
 
-#define PI 3.14159265358
-
 using namespace cv;
 using namespace std;
 
@@ -28,6 +26,7 @@ Coords rotationMatrix(Coords input, double radian, Coords center, Coords rotCent
 Mat forwardMapping(Mat img, double radian);
 Coords backwardRotationMatrix(Coords input, double radian, Coords Center, Coords rotCenter);
 Mat backwardMapping(Mat img, double radian);
+uchar bilinearInterpolation(Mat img, Coords input);
 
 int main(int argc, char* argv[])
 {
@@ -40,16 +39,16 @@ int main(int argc, char* argv[])
     char* imgName = argv[1];
     char* degree = argv[2];
     double val = atof(degree);
-    double radian = (PI / 180.0) * val;
+    double radian = (CV_PI / 180.0) * val;
 
     Mat img = imread(imgName, IMREAD_GRAYSCALE);
     Mat res;    
 
-//  res = forwardMapping(img, radian);
-    res = backwardMapping(img, radian);
-
     imshow("original", img);
-    imshow("result", res);
+    res = forwardMapping(img, radian);
+    imshow("forward", res);
+    res = backwardMapping(img, radian);
+    imshow("backward", res);
     waitKey(0);
 
     return 0;
@@ -124,6 +123,11 @@ Mat forwardMapping(Mat img, double radian)
             {
                 rotImg.at<uchar>((int)res.y, (int)res.x) = img.at<uchar>(i, j);
             }
+            else
+            {
+                cout << "x : " << res.x << endl;
+                cout << "y : " << res.y << endl << endl;
+            }
         }
     }
     return rotImg;
@@ -164,9 +168,48 @@ Mat backwardMapping(Mat img, double radian)
 
             if (!(res.x < 0 || res.y < 0 || res.x >= img.cols || res.y >= img.rows))
             {
-                rotImg.at<uchar>(i, j) = img.at<uchar>((int)res.y, (int)res.x);
+                rotImg.at<uchar>(i, j) = bilinearInterpolation(img, res);
             }
         }
     }
     return rotImg;
+}
+
+uchar bilinearInterpolation(Mat img, Coords input)
+{
+    double x1, x2, y1, y2, w1, h1;
+    double p1Pixel, p2Pixel, p3Pixel, p4Pixel;
+    double firstPixel, secondPixel, resPixel;
+
+    x1 = floor(input.x);
+    y1 = floor(input.y);
+
+    if (x1 != img.cols - 1)
+        x2 = x1 + 1;
+    else
+        x2 = img.cols - 1;
+    
+    if (y1 != img.rows - 1)
+        y2 = y1 + 1;
+    else
+        y2 = img.rows - 1;
+
+    p1Pixel = img.at<uchar>(y1, x1);
+    p2Pixel = img.at<uchar>(y1, x2);
+    p3Pixel = img.at<uchar>(y2, x1);
+    p4Pixel = img.at<uchar>(y2, x2);
+
+    w1 = input.x - x1;
+    h1 = input.y - y1;
+
+    firstPixel = p1Pixel * (1 - w1) + p2Pixel * w1;
+    secondPixel = p3Pixel * (1 - w1) + p4Pixel * w1;
+
+    resPixel = firstPixel * (1 - h1) + secondPixel * h1;
+    
+    resPixel = round(resPixel);
+    if (resPixel > 255)
+        resPixel = 255;
+
+    return (uchar)resPixel;
 }
