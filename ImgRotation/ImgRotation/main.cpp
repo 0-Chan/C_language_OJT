@@ -23,10 +23,11 @@ typedef struct
 
 Length getRectLength(Mat img, double radian);
 Coords rotationMatrix(Coords input, double radian, Coords center, Coords rotCenter);
-Mat forwardMapping(Mat img, double radian);
 Coords backwardRotationMatrix(Coords input, double radian, Coords Center, Coords rotCenter);
+Mat forwardMapping(Mat img, double radian);
 Mat backwardMapping(Mat img, double radian);
 uchar bilinearInterpolation(Mat img, Coords input);
+
 
 int main(int argc, char* argv[])
 {
@@ -97,6 +98,16 @@ Coords rotationMatrix(Coords input, double radian, Coords center, Coords rotCent
     return res;
 }
 
+Coords backwardRotationMatrix(Coords input, double radian, Coords Center, Coords rotCenter)
+{
+    Coords res = { 0 };
+
+    res.x = cos(radian) * (input.x - rotCenter.x) - sin(radian) * (input.y - rotCenter.y) + Center.x;
+    res.y = sin(radian) * (input.x - rotCenter.x) + cos(radian) * (input.y - rotCenter.y) + Center.y;
+
+    return res;
+}
+
 Mat forwardMapping(Mat img, double radian)
 {
     Coords input, res, center, rotCenter;
@@ -123,24 +134,9 @@ Mat forwardMapping(Mat img, double radian)
             {
                 rotImg.at<uchar>((int)res.y, (int)res.x) = img.at<uchar>(i, j);
             }
-            else
-            {
-                cout << "x : " << res.x << endl;
-                cout << "y : " << res.y << endl << endl;
-            }
         }
     }
     return rotImg;
-}
-
-Coords backwardRotationMatrix(Coords input, double radian, Coords Center, Coords rotCenter)
-{
-    Coords res = { 0 };
-
-    res.x = cos(radian) * (input.x - rotCenter.x) - sin(radian) * (input.y - rotCenter.y) + Center.x;
-    res.y = sin(radian) * (input.x - rotCenter.x) + cos(radian) * (input.y - rotCenter.y) + Center.y;
-
-    return res;
 }
 
 Mat backwardMapping(Mat img, double radian)
